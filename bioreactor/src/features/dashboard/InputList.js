@@ -11,7 +11,7 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import Collapse from '@material-ui/core/Collapse';
-import Switch from '@material-ui/core/Switch'
+import Switch from '@material-ui/core/Switch';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -39,28 +39,37 @@ const styles = theme => ({
 });
 
 const InputForm = props => {
-  const {classes} = props
-  return <List component="div" disablePadding>
-          <ListItem>
-          <ListItemIcon>
-            <PowerSettingsNew />
-          </ListItemIcon>
-          <ListItemText primary="On/Off" />
-          
-            <Switch
-              
-              checked={false}
-            />
-          
-        </ListItem>
-        </List>
-}
+  const { classes, form, index, handleFormUpdate } = props;
+  const formData = typeof form[index] === 'undefined' ? {} : form[index];
+  const onoff = typeof formData.onoff === 'undefined' ? false : formData.onoff
+
+  return (
+    <List component="div" disablePadding>
+      <ListItem>
+        <ListItemIcon>
+          <PowerSettingsNew />
+        </ListItemIcon>
+        <ListItemText primary="On/Off" />
+
+        <Switch
+          checked={onoff}
+          onChange={handleFormUpdate(index,'onoff','')}
+        />
+      </ListItem>
+    </List>
+  );
+};
 
 const DefaultList = props => {
-  const { classes, handleClick, open, index } = props;
+  const { classes, handleClick, open, index, form } = props;
   return (
     <React.Fragment>
-      <ListItem button onClick={() => {handleClick(index)}}>
+      <ListItem
+        button
+        onClick={() => {
+          handleClick(index);
+        }}
+      >
         <ListItemText primary={index} />
         <ExpandMore
           className={classnames(classes.expand, {
@@ -69,19 +78,16 @@ const DefaultList = props => {
         />
       </ListItem>
       <Collapse in={open.indexOf(index) !== -1} timeout="auto" unmountOnExit>
-        <InputForm classes={classes}/>
+        <InputForm {...props} />
       </Collapse>
     </React.Fragment>
   );
-}
-
+};
 
 const generateListItems = props => {
   return _.map(_.range(3), i => {
-    const index = i===0?'CO2':i===1?'Nutrient':'Water'
-    return (
-      <DefaultList key={i} index={index} {...props}/>
-    );
+    const index = i === 0 ? 'CO2' : i === 1 ? 'Nutrient' : 'Water';
+    return <DefaultList key={i} index={index} {...props} />;
   });
 };
 

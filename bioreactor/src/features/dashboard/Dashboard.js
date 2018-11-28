@@ -61,11 +61,27 @@ export class Dashboard extends Component {
     super(props);
     this.state = {
       open: [],
+      form: {},
     };
   }
 
-  handleClick = (index) => {
-     const { open } = this.state;
+  handleFormUpdate = (index, subject, data) => event => {
+    const { form } = this.state;
+    const newForm = { ...form };
+
+    const obj = form[index];
+    const newObj = typeof obj !== 'undefined' ? { ...obj } : {};
+    console.log(newObj)
+
+    newObj[subject] = 
+      subject !== 'onoff' ? data : typeof newObj[subject] !== 'undefined' ? !newObj[subject] : true;
+
+    newForm[index] = newObj;
+    this.setState({ form: newForm });
+  };
+
+  handleClick = index => {
+    const { open } = this.state;
     const currentIndex = open.indexOf(index);
     const newOpen = [...open];
 
@@ -82,6 +98,7 @@ export class Dashboard extends Component {
 
   render() {
     const { classes } = this.props;
+    const { open, form } = this.state;
 
     return (
       <div className="dashboard-dashboard">
@@ -89,7 +106,7 @@ export class Dashboard extends Component {
           <Grid xs={12} item>
             <Grid container className={classes.demo} justify="space-around" spacing={0}>
               <Grid sm={5} xs={11} item>
-                <InputList open={this.state.open} handleClick={this.handleClick}/>
+                <InputList open={open} form={form} handleClick={this.handleClick} handleFormUpdate={this.handleFormUpdate} />
               </Grid>
               <Grid direction="column" sm={5} xs={11} item>
                 <Paper className={classes.paper} key={2}>
